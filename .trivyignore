@@ -1,0 +1,3 @@
+# Accepted risk: no fix available for these Debian base image CVEs
+CVE-2025-69720
+CVE-2026-29111
