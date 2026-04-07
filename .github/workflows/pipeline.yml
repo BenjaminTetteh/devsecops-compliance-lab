@@ -28,11 +28,36 @@ jobs:
         sudo apt-get update
         sudo apt-get install trivy -y
 
-    - name: Scan filesystem (Code & Dependencies)
-      run: trivy fs .
+    # Scan source code & dependencies (generate report)
+    - name: Scan filesystem and generate report
+      run: trivy fs --format json --output trivy-report.json .
 
+    # Upload report as audit evidence
+    - name: Upload scan report
+      uses: actions/upload-artifact@v3
+      with:
+        name: trivy-report
+        path: trivy-report.json
+
+    # Enforce compliance (fail on high/critical issues)
+    - name: Scan filesystem (Code & Dependencies)
+      run: trivy fs --exit-code 1 --severity HIGH,CRITICAL .
+
+    # Build Docker image
     - name: Build Docker Image
       run: docker build -t secure-app .
 
-    - name: Scan Docker Image
-      run: trivy image secure-app
+    # 🔍 Scan Docker image (generate report)
+    - name: Scan Docker image and generate report
+      run: trivy image --format json --output trivy-image-report.json secure-app
+
+    # ⬆️ Upload Docker scan report
+    - name: Upload Docker scan report
+      uses: actions/upload-artifact@v3
+      with:
+        name: trivy-image-report
+        path: trivy-image-report.json
+
+    # Enforce Docker image compliance
+    - name: Enforce Docker Image Compliance
+      run: trivy image --exit-code 1 --severity HIGH,CRITICAL secure-app
