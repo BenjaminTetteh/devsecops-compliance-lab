@@ -53,7 +53,7 @@ jobs:
 
     # ⬆️ Upload Docker scan report
     - name: Upload Docker scan report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: trivy-image-report
         path: trivy-image-report.json
